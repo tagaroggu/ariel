@@ -18,13 +18,19 @@ struct __ArielStack {
 
 // TODO make sure this/these macros are correct
 // #define e(name, propsBlock, childrenBlock) ({ createElement(name); __ArielOpenBlock(); propsBlock; childrenBlock; __ArielCloseBlock(); })
-#define e(name, propsBlock, childrenBlock) ({ __ArielOpenBlock(createElement(name)); propsBlock; childrenBlock; __ArielCloseBlock(); })
-#define p(name, value) ({ char *p = createProperty(name, value); appendProperty(__ARIEL_STACK->element, p); free(p); })
-#define t(text) ({ char *t = createText(text); appendChild(__ARIEL_STACK->element, t); free(t); })
+
+#ifndef ARIEL_JOIN_BLOCKS
+#define e(name, propsBlock, childrenBlock) ({ __ArielOpenBlock(createElement(name)); propsBlock; childrenBlock; __ArielCloseBlock(); });
+#else
+#define e(name, block) ({ __ArielOpenBlock(createElement(name)); block; __ArielCloseBlock(); });
+#endif
+
+#define p(name, value) ({ char *p = createProperty(name, value); appendProperty(__ARIEL_STACK->element, p); free(p); });
+#define t(text) ({ char *t = createText(text); appendChild(__ARIEL_STACK->element, t); free(t); });
 
 void __ArielPushStack(struct Element *element);
 struct Element *__ArielPopStack();
-void __ArielOpenBlock();
+void __ArielOpenBlock(struct Element *element);
 char *__ArielCloseBlock();
 
 struct Element *createElement(char *name);
